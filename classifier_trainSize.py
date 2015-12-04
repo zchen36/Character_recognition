@@ -15,9 +15,10 @@ from skimage.feature import hog
 from skimage.filter import threshold_otsu
 from skimage.morphology import closing, square
 from sklearn import svm
-#import pickle
+import pickle
 from sklearn.externals import joblib
 import random
+from sklearn.metrics import confusion_matrix
 
 #class 1..62
 #def readData(data_set,kernel):
@@ -27,9 +28,9 @@ data_set=1
 kernel='rbf'
 print data_set,kernel
 class_set1=[1,2,3,4,5,6,7,8,9,10]
-class_set2=range(1,36)
+class_set2=range(1,37)
 class_set3=range(36,62)
-class_set4=range(1,62)
+class_set4=range(1,63)
 if data_set==1:
     class_set=class_set1
 elif data_set==2:
@@ -43,7 +44,7 @@ elif data_set==5:
 else:
     data_set=1
 
-train_size=5
+train_size=20
 x_train=[]
 y_train=[]
 x_test=[]
@@ -69,7 +70,12 @@ for classNum in class_set:
                 cells_per_block=(1, 1), visualise=True)
         x_train.append(img_feature)
 #        x_train.append(np.reshape(img_otsu,[1,400])[0])
-        y_train.append(classNum)
+        if classNum==24:
+            y_train.append(0)
+        elif classNum==50:
+            y_train.append(0)
+        else:
+            y_train.append(classNum)
         
     for i in test_file:
         img=imread(class_files[i],as_grey=True)
@@ -83,12 +89,17 @@ for classNum in class_set:
                 cells_per_block=(1, 1), visualise=True)
         x_test.append(img_feature)
 #        x_test.append(np.reshape(img_otsu,[1,400])[0])
-        y_verify.append(classNum)
+        if classNum==24:
+            y_verify.append(0)
+        elif classNum==50:
+            y_verify.append(0)
+        else:
+            y_verify.append(classNum)
     
     print 'class %.2d done' % classNum
         
 #        print class_files[i]
-    if classNum==3:
+    if classNum==7:
         img=imread(class_files[21],as_grey=True)
         plt.subplot(2,3,2)
         plt.imshow(img,cmap="Greys")
@@ -147,12 +158,30 @@ else:
 clf.fit(x_train,y_train)
 joblib.dump(clf, 'svmClassifier.pkl')
 #    clf = joblib.load('svmClassifier.pkl')
-#y_test = clf.predict(x_test)
+y_test = clf.predict(x_test)
 #y_diff=y_test-y_verify
 #y_nonzero=np.count_nonzero(y_diff)
 #accuracy=1.0-float(y_nonzero)/len(y_verify)
 accuracy=clf.score(x_test,y_verify)
 print accuracy
+
+def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
+    plt.figure()    
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+#    tick_marks = np.arange(len(iris.target_names))
+#    plt.xticks(tick_marks, iris.target_names, rotation=45)
+#    plt.yticks(tick_marks, iris.target_names)
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    
+cm = confusion_matrix(y_verify, y_test)
+np.set_printoptions(precision=2)
+print('Confusion matrix, without normalization')
+#print(cm)
+plot_confusion_matrix(cm)
 
         
 #readData()

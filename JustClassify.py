@@ -5,14 +5,14 @@ Created on Mon Nov 16 17:44:11 2015
 @author: zc
 """
 
-#from sklearn.externals import joblib
+from sklearn.externals import joblib
 #
 #clf = joblib.load('svmClassifier.pkl') 
 
 import read_data
 import  numpy as np
 
-a=read_data.readData(5,'poly');
+a=read_data.readData(1,'rbf');
 print a
 
 #data_set=[1,2,3,4]

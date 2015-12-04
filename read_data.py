@@ -128,16 +128,17 @@ def readData(data_set,kernel):
     if kernel=='sig':
         clf = svm.SVC(kernel='sigmoid',gamma=0.01, C=100,coef0=0)
     elif kernel=='poly':
-        clf = svm.SVC(kernel='poly',gamma=0.01,degree=1,coef0=1)
+        clf = svm.SVC(kernel='poly',gamma=0.01,degree=2,coef0=1)
     elif kernel=='rbf':
-        clf = svm.SVC(kernel='rbf',gamma=0.3)
+        clf = svm.SVC(kernel='rbf',gamma=0.35,C=1000)
     elif kernel=='linear':
         clf = svm.SVC(kernel='linear')
     else:
         clf = svm.SVC(kernel='sigmoid',gamma=0.01, coef0=0)
         
     clf.fit(x_train,y_train)
-    joblib.dump(clf, 'svmClassifier.pkl') 
+    joblib.dump(clf, 'svmClassifier.pkl')
+#    clf = joblib.load('svmClassifier.pkl')
     y_test = clf.predict(x_test)
     y_diff=y_test-y_verify
     y_nonzero=np.count_nonzero(y_diff)
